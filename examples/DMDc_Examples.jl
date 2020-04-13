@@ -32,10 +32,11 @@ prob = DiscreteProblem(dudt_, X[:, 1], (0., 10.))
 sol_unforced = solve(prob,  FunctionMap())
 plot(sol_unforced)
 
-get_inputmap(sys)(1.0, [], 0.0)
+inputmap(sys)(1.0, [], 0.0)
 # Create a system with cos control input to stabilize
-dudt_ = dynamics(sys, control = (u, p, t) -> -0.5u[1])
-prob = DiscreteProblem(dudt_, X[:, 1], (0., 10.))
+dudt2(u, p, t) = sys(u, p, t) + inputmap(sys)(-0.5*u[1], p, t)
+
+prob = DiscreteProblem(dudt2, X[:, 1], (0., 10.))
 sol = solve(prob, FunctionMap())
 
-plot!(sol)
+plot(sol)
